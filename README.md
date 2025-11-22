@@ -2,7 +2,7 @@
 
 ## Why
 
-Many professionals in IT would agree that it's not easy keep up to date with the market trends.
+Many professionals in IT would agree that it's not easy to keep up to date with the market trends.
 How could one be able to properly follow and act over them?
 
 ## What
