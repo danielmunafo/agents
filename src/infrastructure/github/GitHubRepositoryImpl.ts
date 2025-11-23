@@ -78,11 +78,12 @@ export class GitHubRepositoryImpl implements GitHubRepository {
       const prBody = this.getPRBody(type, data);
 
       // Check for existing PR from this branch
+      // For same-repo PRs, head is just the branch name
       const { data: existingPRs } = await this.octokit.pulls.list({
         owner,
         repo,
         state: "open",
-        head: `${owner}:${branchName}`,
+        head: branchName,
       });
 
       let pr;
@@ -215,8 +216,10 @@ export class GitHubRepositoryImpl implements GitHubRepository {
       return `trends/${data.year}-W${data.weekNumber.toString().padStart(2, "0")}-summary`;
     }
     if (type === "monthly") {
-      const month = new Date().getMonth() + 1;
-      return `trends/${data.year}-${month.toString().padStart(2, "0")}-recommendations`;
+      if (!data.month) {
+        throw new Error("Month is required for monthly PRs");
+      }
+      return `trends/${data.year}-${data.month.toString().padStart(2, "0")}-recommendations`;
     }
     throw new Error(`Unknown PR type: ${type}`);
   }
@@ -229,8 +232,25 @@ export class GitHubRepositoryImpl implements GitHubRepository {
       return `${data.weekNumber} Trends Knowledge Base Summary`;
     }
     if (type === "monthly") {
-      const month = new Date().toLocaleString("default", { month: "long" });
-      return `${month} ${data.year} Recommended Actions`;
+      if (!data.month) {
+        throw new Error("Month is required for monthly PRs");
+      }
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const monthName = monthNames[data.month - 1];
+      return `${monthName} ${data.year} Recommended Actions`;
     }
     throw new Error(`Unknown PR type: ${type}`);
   }
@@ -243,8 +263,10 @@ export class GitHubRepositoryImpl implements GitHubRepository {
       return `trends/${data.year}-W${data.weekNumber.toString().padStart(2, "0")}/Summary.md`;
     }
     if (type === "monthly") {
-      const month = new Date().getMonth() + 1;
-      return `trends/${data.year}-${month.toString().padStart(2, "0")}/Recommendations.md`;
+      if (!data.month) {
+        throw new Error("Month is required for monthly PRs");
+      }
+      return `trends/${data.year}-${data.month.toString().padStart(2, "0")}/Recommendations.md`;
     }
     throw new Error(`Unknown PR type: ${type}`);
   }
@@ -271,7 +293,25 @@ This PR summarizes all tech trends analyzed during week ${data.weekNumber} of ${
 See the attached Summary.md file for details.`;
     }
     if (type === "monthly") {
-      return `## Recommended Actions - ${new Date().toLocaleString("default", { month: "long" })} ${data.year}
+      if (!data.month) {
+        throw new Error("Month is required for monthly PRs");
+      }
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const monthName = monthNames[data.month - 1];
+      return `## Recommended Actions - ${monthName} ${data.year}
 
 This PR contains recommended actions for managers, engineers, and product owners based on the trends analyzed this month.
 

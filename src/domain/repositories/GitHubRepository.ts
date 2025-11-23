@@ -5,6 +5,7 @@ import type { Area } from "../value-objects/Area.js";
 export interface PRData {
   weekNumber: number;
   year: number;
+  month?: number; // Required for monthly PRs
   area?: Area;
   trend?: Trend;
   summary?: string;

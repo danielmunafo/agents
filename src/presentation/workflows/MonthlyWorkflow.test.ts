@@ -127,6 +127,7 @@ describe("MonthlyWorkflow", () => {
       expect(mockCreatePRUseCase.execute).toHaveBeenCalledWith("monthly", {
         weekNumber: 0,
         year,
+        month,
         markdownContent: "# Recommendations\n\nContent",
         filename: "Recommendations.md",
       });

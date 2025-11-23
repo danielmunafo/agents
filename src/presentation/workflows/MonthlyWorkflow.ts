@@ -64,6 +64,7 @@ export class MonthlyWorkflow {
     const prData: PRData = {
       weekNumber: 0, // Not used for monthly
       year: yr,
+      month: mth,
       markdownContent: recommendations,
       filename: "Recommendations.md",
     };
