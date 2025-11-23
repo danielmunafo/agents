@@ -7,6 +7,7 @@ const envSchema = z.object({
   GITHUB_TOKEN: z.string().min(1, "GITHUB_TOKEN is required"),
   GITHUB_REPO_OWNER: z.string().optional(),
   GITHUB_REPO_NAME: z.string().optional(),
+  OPENAI_MODEL: z.string().optional(),
 });
 
 export const env = envSchema.parse({
@@ -14,6 +15,7 @@ export const env = envSchema.parse({
   GITHUB_TOKEN: process.env.GITHUB_TOKEN,
   GITHUB_REPO_OWNER: process.env.GITHUB_REPO_OWNER,
   GITHUB_REPO_NAME: process.env.GITHUB_REPO_NAME,
+  OPENAI_MODEL: process.env.OPENAI_MODEL,
 });
 
 // Get repo info from environment or git remote

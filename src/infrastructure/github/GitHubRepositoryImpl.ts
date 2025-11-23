@@ -74,16 +74,42 @@ export class GitHubRepositoryImpl implements GitHubRepository {
         }
       }
 
-      // Create PR
+      // Create or update PR
       const prBody = this.getPRBody(type, data);
-      const { data: pr } = await this.octokit.pulls.create({
+
+      // Check for existing PR from this branch
+      const { data: existingPRs } = await this.octokit.pulls.list({
         owner,
         repo,
-        title: prTitle,
-        body: prBody,
-        head: branchName,
-        base: defaultBranch,
+        state: "open",
+        head: `${owner}:${branchName}`,
       });
+
+      let pr;
+      if (existingPRs.length > 0) {
+        // Update the existing PR
+        pr = (
+          await this.octokit.pulls.update({
+            owner,
+            repo,
+            pull_number: existingPRs[0].number,
+            title: prTitle,
+            body: prBody,
+          })
+        ).data;
+      } else {
+        // Create a new PR
+        pr = (
+          await this.octokit.pulls.create({
+            owner,
+            repo,
+            title: prTitle,
+            body: prBody,
+            head: branchName,
+            base: defaultBranch,
+          })
+        ).data;
+      }
 
       return pr.html_url;
     } catch (error) {

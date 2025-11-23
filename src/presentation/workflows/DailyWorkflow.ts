@@ -63,7 +63,11 @@ export class DailyWorkflow {
     logger.debug({ area }, "Step 2: Analyzing trends");
     const areaPosts = { [area]: posts } as Record<Area, Post[]>;
     const areaAgents = new Map<Area, Agent>();
-    areaAgents.set(area, this.agents.get(area)!);
+    const agent = this.agents.get(area);
+    if (!agent) {
+      throw new Error(`No agent found for area: ${area}`);
+    }
+    areaAgents.set(area, agent);
     const trends = await this.analyzeTrendsUseCase.execute(
       areaPosts,
       areaAgents

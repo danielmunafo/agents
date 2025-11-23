@@ -167,9 +167,10 @@ export class LinkedInScraperImpl implements LinkedInScraper {
               },
               url: url || `https://www.linkedin.com/feed/update/${Date.now()}`,
             });
-          } catch (err) {
+          } catch {
             // Skip posts that fail to parse
-            logger.debug({ error: err }, "Error parsing post, skipping");
+            // Note: logger is not available in browser context (page.evaluate)
+            // Errors are silently skipped to continue processing other posts
           }
         }
 

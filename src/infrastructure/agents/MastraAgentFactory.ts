@@ -24,7 +24,7 @@ class MastraAgentImpl implements Agent {
     this.agent = createAgent({
       name: `${this.area.toLowerCase().replace(/\s+/g, "-")}-analyzer`,
       instructions: this.instructions,
-      model: openai("gpt-4"),
+      model: openai(env.OPENAI_MODEL || "gpt-4"),
       providerApiKey: env.OPENAI_API_KEY,
     });
   }
