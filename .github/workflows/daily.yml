@@ -1,0 +1,103 @@
+name: Daily Trends
+
+on:
+  schedule:
+    # Run every day at 02:00 UTC (to avoid peak hours)
+    - cron: "0 2 * * *"
+  workflow_dispatch: # Allow manual trigger
+    inputs:
+      area:
+        description: "Specific area to process (optional, processes all if not specified)"
+        required: false
+        type: choice
+        options:
+          - "All"
+          - "General IT"
+          - "Back end"
+          - "Front end"
+          - "AI, LLM and Machine learning"
+          - "Database"
+          - "DevOps and infrastructure"
+          - "Architecture, governance and design"
+          - "Testing and QA"
+
+jobs:
+  daily-trends:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Run each area in parallel for efficiency
+      matrix:
+        area:
+          - "General IT"
+          - "Back end"
+          - "Front end"
+          - "AI, LLM and Machine learning"
+          - "Database"
+          - "DevOps and infrastructure"
+          - "Architecture, governance and design"
+          - "Testing and QA"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Puppeteer dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            ca-certificates \
+            fonts-liberation \
+            libappindicator3-1 \
+            libasound2 \
+            libatk-bridge2.0-0 \
+            libatk1.0-0 \
+            libc6 \
+            libcairo2 \
+            libcups2 \
+            libdbus-1-3 \
+            libexpat1 \
+            libfontconfig1 \
+            libgbm1 \
+            libgcc1 \
+            libglib2.0-0 \
+            libgtk-3-0 \
+            libnspr4 \
+            libnss3 \
+            libpango-1.0-0 \
+            libpangocairo-1.0-0 \
+            libstdc++6 \
+            libx11-6 \
+            libx11-xcb1 \
+            libxcb1 \
+            libxcomposite1 \
+            libxcursor1 \
+            libxdamage1 \
+            libxext6 \
+            libxfixes3 \
+            libxi6 \
+            libxrandr2 \
+            libxrender1 \
+            libxss1 \
+            libxtst6 \
+            lsb-release \
+            wget \
+            xdg-utils
+
+      - name: Run daily workflow for ${{ matrix.area }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AREA: "${{ matrix.area }}"
+        run: npm run daily

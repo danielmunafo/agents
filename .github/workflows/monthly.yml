@@ -1,0 +1,32 @@
+name: Monthly Recommendations
+
+on:
+  schedule:
+    # Run on the 1st of every month at 00:00 UTC
+    - cron: "0 0 1 * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  monthly-recommendations:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run monthly workflow
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run monthly
