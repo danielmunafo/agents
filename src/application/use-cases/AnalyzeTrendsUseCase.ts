@@ -31,7 +31,7 @@ export class AnalyzeTrendsUseCase {
         throw new Error(`No agent provided for area: ${area}`);
       }
 
-      const analysis = await agent.analyze(posts, area);
+      const analysis = await agent.analyze(posts);
       const trend = this.trendService.createTrend(area, analysis, posts);
 
       trends[area] = trend;

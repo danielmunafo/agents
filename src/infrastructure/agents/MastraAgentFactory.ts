@@ -1,7 +1,7 @@
 // Try different import patterns for Mastra
-// @ts-expect-error - Mastra API may vary
+// @ts-expect-error - Mastra does not provide TypeScript types, and the API may vary between versions
 import { createAgent } from "@mastra/core";
-// @ts-expect-error - Provider import may vary
+// @ts-expect-error - Mastra provider import may vary and lacks TypeScript types
 import { openai } from "@mastra/core/providers/openai";
 import type { Agent } from "../../domain/repositories/AIAnalyzer.js";
 import type { Post } from "../../domain/entities/Post.js";

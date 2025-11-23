@@ -96,8 +96,12 @@ jobs:
             xdg-utils
 
       - name: Run daily workflow for ${{ matrix.area }}
+        # Skip this job if manually triggered with a specific area that doesn't match
+        if: github.event_name != 'workflow_dispatch' || !github.event.inputs.area || github.event.inputs.area == 'All' || github.event.inputs.area == matrix.area
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AREA: "${{ matrix.area }}"
+          # When manually triggered with "All" or no area, the script runs all areas
+          # When a specific area is selected, only pass that area
+          AREA: "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.area && github.event.inputs.area != 'All' && github.event.inputs.area || matrix.area }}"
         run: npm run daily

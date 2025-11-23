@@ -86,10 +86,8 @@ export class LinkedInScraperImpl implements LinkedInScraper {
 
       // Extract posts
       const posts = await page.evaluate((max) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment
         // @ts-expect-error - document is available in browser context
-        const doc = document as Document;
-        const postElements = doc.querySelectorAll(
+        const postElements = document.querySelectorAll(
           '[data-testid="search-result"]'
         );
         const results: ScrapedPost[] = [];
@@ -97,8 +95,8 @@ export class LinkedInScraperImpl implements LinkedInScraper {
         for (const element of Array.from(postElements).slice(
           0,
           max
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ) as any[]) {
+          // @ts-expect-error - Element is available in browser context
+        ) as Element[]) {
           try {
             // Extract content
             const contentEl =
@@ -117,8 +115,8 @@ export class LinkedInScraperImpl implements LinkedInScraper {
             // Extract author URL
             const authorLink = element.querySelector(
               'a[href*="/in/"]'
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ) as any;
+              // @ts-expect-error - HTMLAnchorElement is available in browser context
+            ) as HTMLAnchorElement | null;
             const authorUrl = authorLink?.href;
 
             // Extract engagement
@@ -146,8 +144,8 @@ export class LinkedInScraperImpl implements LinkedInScraper {
             // Extract post URL
             const postLink = element.querySelector(
               'a[href*="/posts/"], a[href*="/activity-"]'
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ) as any;
+              // @ts-expect-error - HTMLAnchorElement is available in browser context
+            ) as HTMLAnchorElement | null;
             const url = postLink?.href || "";
 
             // Extract date (simplified - LinkedIn uses relative dates)
@@ -197,10 +195,8 @@ export class LinkedInScraperImpl implements LinkedInScraper {
   private async scrollPage(page: Page, times: number): Promise<void> {
     for (let i = 0; i < times; i++) {
       await page.evaluate(() => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-ts-comment
         // @ts-expect-error - window is available in browser context
-        const win = window as Window;
-        win.scrollBy(0, win.innerHeight);
+        window.scrollBy(0, window.innerHeight);
       });
       await this.delay(2000);
     }
