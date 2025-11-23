@@ -107,16 +107,29 @@ export class LinkedInScraperImpl implements LinkedInScraper {
 
     try {
       const cookieData = await readFile(fullPath, "utf-8");
+      if (!cookieData || cookieData.trim().length === 0) {
+        logger.warn({ cookiePath: fullPath }, "LinkedIn cookies file is empty");
+        return null;
+      }
       const cookies = JSON.parse(cookieData) as Cookie[];
+      if (!Array.isArray(cookies) || cookies.length === 0) {
+        logger.warn(
+          { cookiePath: fullPath, cookieCount: cookies?.length || 0 },
+          "LinkedIn cookies file contains no valid cookies"
+        );
+        return null;
+      }
       logger.debug(
         { cookieCount: cookies.length },
         "Loaded LinkedIn cookies from file"
       );
       return cookies;
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       logger.warn(
-        { cookiePath: fullPath, error },
-        "Failed to load LinkedIn cookies"
+        { cookiePath: fullPath, error: errorMessage },
+        "Failed to load LinkedIn cookies - file may be invalid JSON or corrupted"
       );
       return null;
     }

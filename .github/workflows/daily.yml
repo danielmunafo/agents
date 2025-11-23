@@ -106,11 +106,21 @@ jobs:
               exit 1
             fi
             echo "LinkedIn cookies file created successfully"
+            echo "File size: $(wc -c < linkedin-cookies.json) bytes"
+            echo "File exists: $(test -f linkedin-cookies.json && echo 'yes' || echo 'no')"
           else
-            echo "Warning: LINKEDIN_COOKIES secret not set - authentication will be required"
+            echo "Error: LINKEDIN_COOKIES secret is not set"
+            echo "Please add LINKEDIN_COOKIES secret in GitHub Settings → Secrets and variables → Actions"
+            exit 1
           fi
-        env:
-          LINKEDIN_COOKIES_PATH: linkedin-cookies.json
+
+      - name: Verify cookies file exists
+        run: |
+          if [ ! -f linkedin-cookies.json ]; then
+            echo "Error: linkedin-cookies.json file not found"
+            exit 1
+          fi
+          echo "Cookies file verified: $(ls -lh linkedin-cookies.json)"
 
       - name: Run daily workflow for ${{ matrix.area }}
         # Skip this job if manually triggered with a specific area that doesn't match
