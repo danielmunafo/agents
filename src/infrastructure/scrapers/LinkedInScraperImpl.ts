@@ -64,8 +64,23 @@ export class LinkedInScraperImpl implements LinkedInScraper {
 
         if (allPosts.length >= maxPosts) break;
       } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        // Authentication errors should fail immediately - don't continue
+        if (
+          errorMessage.includes("authentication required") ||
+          errorMessage.includes("login page") ||
+          errorMessage.includes("LinkedIn authentication")
+        ) {
+          logger.error(
+            { keyword, area, error: errorMessage },
+            "LinkedIn authentication failed - stopping workflow"
+          );
+          // Re-throw authentication errors to fail the workflow
+          throw error;
+        }
+        // For other errors, log and continue with next keyword
         logger.error({ keyword, area, error }, "Error searching for keyword");
-        // Continue with next keyword
       }
     }
 
