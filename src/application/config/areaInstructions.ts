@@ -1,4 +1,4 @@
-import type { Area } from "../../domain/value-objects/Area.js";
+import { Area } from "../../domain/value-objects/Area.js";
 
 export const AREA_INSTRUCTIONS: Record<Area, string> = {
   [Area.GENERAL_IT]: `You are an expert analyst specializing in General IT trends. Analyze the provided LinkedIn posts and extract:

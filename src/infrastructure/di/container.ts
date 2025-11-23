@@ -1,6 +1,6 @@
 import { LinkedInScraperImpl } from "../scrapers/LinkedInScraperImpl.js";
 import { GitHubRepositoryImpl } from "../github/GitHubRepositoryImpl.js";
-import { agentFactory } from "../agents/MastraAgentFactory.js";
+import { agentFactory } from "../agents/OpenAIAgentFactory.js";
 import type { LinkedInScraper } from "../../domain/repositories/LinkedInScraper.js";
 import type { Agent } from "../../domain/repositories/AIAnalyzer.js";
 import type { GitHubRepository } from "../../domain/repositories/GitHubRepository.js";
@@ -22,7 +22,7 @@ export class Container {
   }
 
   /**
-   * Get a Mastra agent for a specific area
+   * Get an OpenAI agent for a specific area
    */
   getAgent(area: Area): Agent {
     return agentFactory.getAgent(area);

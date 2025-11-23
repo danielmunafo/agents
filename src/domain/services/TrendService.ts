@@ -20,7 +20,7 @@ export class TrendService {
   }
 
   createTrend(area: Area, analysis: TrendAnalysis, posts: Post[]): Trend {
-    return {
+    const trend: Trend & { _isFallback?: boolean } = {
       area,
       mainAspects: analysis.mainAspects,
       whyImportant: analysis.whyImportant,
@@ -29,5 +29,12 @@ export class TrendService {
       referencePosts: posts.slice(0, 10), // Top 10 posts
       relevanceScore: this.calculateRelevanceScore(posts),
     };
+
+    // Preserve fallback flag if present
+    if (analysis._isFallback) {
+      trend._isFallback = true;
+    }
+
+    return trend;
   }
 }

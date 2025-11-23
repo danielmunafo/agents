@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/rest";
+import * as prettier from "prettier";
 import type { Post } from "../../domain/entities/Post.js";
 import type { Trend } from "../../domain/entities/Trend.js";
 import type { Area } from "../../domain/value-objects/Area.js";
@@ -347,6 +348,41 @@ See the attached Recommendations.md file for details.`;
     }
   }
 
+  /**
+   * Format content using Prettier based on file extension
+   */
+  private async formatContent(path: string, content: string): Promise<string> {
+    try {
+      const ext = path.split(".").pop()?.toLowerCase();
+
+      if (ext === "json") {
+        // Format JSON
+        return await prettier.format(content, {
+          parser: "json",
+          printWidth: 80,
+          tabWidth: 2,
+        });
+      } else if (ext === "md" || ext === "markdown") {
+        // Format Markdown
+        return await prettier.format(content, {
+          parser: "markdown",
+          printWidth: 80,
+          proseWrap: "preserve",
+        });
+      }
+
+      // Return as-is for other file types
+      return content;
+    } catch (error) {
+      logger.warn(
+        { path, error: error instanceof Error ? error.message : String(error) },
+        "Failed to format content with Prettier, using original content"
+      );
+      // Return original content if formatting fails
+      return content;
+    }
+  }
+
   private async createOrUpdateFile(
     owner: string,
     repo: string,
@@ -354,6 +390,9 @@ See the attached Recommendations.md file for details.`;
     path: string,
     content: string
   ): Promise<void> {
+    // Format content before writing
+    const formattedContent = await this.formatContent(path, content);
+
     try {
       // Try to get existing file
       const { data: fileData } = await this.octokit.repos.getContent({
@@ -375,7 +414,7 @@ See the attached Recommendations.md file for details.`;
           repo,
           path,
           message: `Update ${path}`,
-          content: Buffer.from(content).toString("base64"),
+          content: Buffer.from(formattedContent).toString("base64"),
           sha: fileData.sha,
           branch,
         });
@@ -392,7 +431,7 @@ See the attached Recommendations.md file for details.`;
           repo,
           path,
           message: `Add ${path}`,
-          content: Buffer.from(content).toString("base64"),
+          content: Buffer.from(formattedContent).toString("base64"),
           branch,
         });
         return;

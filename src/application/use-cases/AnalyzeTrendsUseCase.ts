@@ -9,7 +9,7 @@ export class AnalyzeTrendsUseCase {
   private readonly trendService = new TrendService();
 
   /**
-   * Analyze trends using Mastra agents
+   * Analyze trends using OpenAI agents
    * @param postsByArea Posts organized by area
    * @param agents Optional map of agents per area. If not provided, agents will be fetched from container
    */

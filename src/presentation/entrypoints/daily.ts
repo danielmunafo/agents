@@ -34,7 +34,17 @@ async function main() {
       await workflow.executeAll(weekNumber, year);
     }
   } catch (error) {
-    logger.error({ error }, "Daily workflow failed");
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    logger.error(
+      {
+        error: errorMessage,
+        stack: errorStack,
+        errorType: error?.constructor?.name,
+        errorString: String(error),
+      },
+      "Daily workflow failed"
+    );
     process.exit(1);
   } finally {
     await workflow.cleanup();

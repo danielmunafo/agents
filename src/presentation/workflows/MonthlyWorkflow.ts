@@ -13,7 +13,7 @@ export class MonthlyWorkflow {
   constructor() {
     const githubRepository = container.getGitHubRepository();
 
-    // Create a general-purpose Mastra agent for recommendations
+    // Create a general-purpose OpenAI agent for recommendations
     const recommendationsAgent = container.createGeneralAgent(
       "You are an expert analyst specializing in creating actionable recommendations for managers, engineers, and product owners based on tech trend analysis. Provide structured, practical recommendations with clear impacts and references."
     );

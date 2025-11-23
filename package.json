@@ -45,7 +45,6 @@
     "vitest": "^1.2.0"
   },
   "dependencies": {
-    "@mastra/core": "^0.24.5",
     "@octokit/rest": "^22.0.1",
     "@types/puppeteer": "^5.4.7",
     "date-fns": "^4.1.0",
