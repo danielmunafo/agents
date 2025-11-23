@@ -138,7 +138,7 @@ export LINKEDIN_COOKIES_PATH="path/to/linkedin-cookies.json"
    - The `li_at` cookie is the most important one (your session token)
    - Cookies expire, so you may need to refresh them periodically
    - Keep `linkedin-cookies.json` in `.gitignore` (it's already there) - never commit your cookies!
-   - For GitHub Actions, you'll need to store cookies as a secret and load them at runtime
+   - **For GitHub Actions:** Store the entire JSON array as a repository secret named `LINKEDIN_COOKIES`. The workflow will automatically create the file from the secret.
 
 ### Running Locally
 
@@ -184,6 +184,11 @@ AREA="Front end" WEEK_NUMBER=1 YEAR=2024 npm run daily
 1. Add secrets to your GitHub repository:
    - Go to Settings → Secrets and variables → Actions
    - Add `OPENAI_API_KEY` with your OpenAI API key
+   - **Add `LINKEDIN_COOKIES` secret:**
+     - Export your LinkedIn cookies as JSON (see "LinkedIn Authentication" section above)
+     - Copy the entire JSON array content (e.g., `[{"name":"li_at","value":"...",...}]`)
+     - Create a new secret named `LINKEDIN_COOKIES` and paste the JSON array as the value
+     - The workflow will automatically create `linkedin-cookies.json` from this secret at runtime
    - `GITHUB_TOKEN` is automatically available in GitHub Actions
 
 2. The workflows will run automatically in a **funnel architecture**:

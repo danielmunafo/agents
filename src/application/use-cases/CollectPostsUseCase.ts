@@ -11,6 +11,8 @@ export class CollectPostsUseCase {
 
     for (const area of areas) {
       logger.debug({ area }, "Collecting posts");
+      // If authentication fails, the scraper will throw an error
+      // which will propagate up and fail the workflow immediately
       const posts = await this.linkedInScraper.searchPosts(area);
       results[area] = posts;
       logger.info({ area, count: posts.length }, "Collected posts");

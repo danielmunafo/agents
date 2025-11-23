@@ -260,18 +260,20 @@ export class LinkedInScraperImpl implements LinkedInScraper {
       const isLoginPage =
         pageUrl.includes("/login") || pageTitle.toLowerCase().includes("login");
       if (isLoginPage) {
+        const cookieFile =
+          process.env.LINKEDIN_COOKIES_PATH || "linkedin-cookies.json";
+        const errorMessage = `LinkedIn authentication required. The scraper was redirected to a login page (${pageUrl}). Please export your LinkedIn cookies to ${cookieFile}. See README.md for instructions.`;
         logger.error(
           {
             keyword,
             area,
             pageUrl,
-            cookieFile:
-              process.env.LINKEDIN_COOKIES_PATH || "linkedin-cookies.json",
+            cookieFile,
           },
-          "LinkedIn is showing login page - authentication required. Please export your LinkedIn cookies to linkedin-cookies.json. See README.md for instructions."
+          errorMessage
         );
-        // Return empty results instead of continuing
-        return [];
+        // Throw error to fail the workflow instead of silently returning empty results
+        throw new Error(errorMessage);
       }
 
       // Get page content snippet for debugging
@@ -307,13 +309,18 @@ export class LinkedInScraperImpl implements LinkedInScraper {
       );
 
       if (hasLoginPrompt) {
-        logger.warn(
-          { keyword, area },
-          "LinkedIn appears to be showing a login prompt"
-        );
+        const cookieFile =
+          process.env.LINKEDIN_COOKIES_PATH || "linkedin-cookies.json";
+        const errorMessage = `LinkedIn authentication required. The page content indicates a login prompt. Please export your LinkedIn cookies to ${cookieFile}. See README.md for instructions.`;
+        logger.error({ keyword, area, pageUrl, cookieFile }, errorMessage);
+        // Throw error to fail the workflow instead of silently continuing
+        throw new Error(errorMessage);
       }
       if (hasBlockedMessage) {
-        logger.warn({ keyword, area }, "LinkedIn may be blocking the scraper");
+        const errorMessage = `LinkedIn may be blocking the scraper. The page content indicates unusual activity or verification required. Please check your LinkedIn cookies and authentication setup.`;
+        logger.error({ keyword, area, pageUrl }, errorMessage);
+        // Throw error to fail the workflow
+        throw new Error(errorMessage);
       }
 
       // Check what selectors are actually available on the page

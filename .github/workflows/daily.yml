@@ -95,12 +95,22 @@ jobs:
             wget \
             xdg-utils
 
+      - name: Create LinkedIn cookies file from secret
+        run: |
+          if [ -n "${{ secrets.LINKEDIN_COOKIES }}" ]; then
+            echo "${{ secrets.LINKEDIN_COOKIES }}" > linkedin-cookies.json
+            chmod 600 linkedin-cookies.json
+          fi
+        env:
+          LINKEDIN_COOKIES_PATH: linkedin-cookies.json
+
       - name: Run daily workflow for ${{ matrix.area }}
         # Skip this job if manually triggered with a specific area that doesn't match
         if: github.event_name != 'workflow_dispatch' || !github.event.inputs.area || github.event.inputs.area == 'All' || github.event.inputs.area == matrix.area
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LINKEDIN_COOKIES_PATH: linkedin-cookies.json
           # When manually triggered with "All" or no area, the script runs all areas
           # When a specific area is selected, only pass that area
           AREA: "${{ github.event_name == 'workflow_dispatch' && github.event.inputs.area && github.event.inputs.area != 'All' && github.event.inputs.area || matrix.area }}"
