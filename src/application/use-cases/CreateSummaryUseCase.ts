@@ -58,7 +58,7 @@ ${JSON.stringify(
 Provide a 2-3 paragraph executive summary that highlights the most important trends and their implications for the tech industry.`;
 
     try {
-      // Use Mastra agent for summary generation
+      // Use OpenAI agent for summary generation
       const summaryText = await this.agent.generateText(prompt);
       markdown += `## Executive Summary\n\n${summaryText}\n\n`;
     } catch (error) {

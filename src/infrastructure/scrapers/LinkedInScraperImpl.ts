@@ -186,17 +186,9 @@ export class LinkedInScraperImpl implements LinkedInScraper {
 
       logger.debug({ keyword, area }, "Navigating to LinkedIn search");
 
-      // Build improved search URL with better filters
-      // Use FACETED_SEARCH origin, filter by recent posts (past 24h), and sort by relevance
-      const searchParams = new URLSearchParams({
-        keywords: keyword,
-        contentType: "posts", // Focus on posts, not photos
-        datePosted: "past-24h", // Get recent content from last 24 hours
-        origin: "FACETED_SEARCH",
-        sortBy: "relevance", // Sort by relevance for better results
-      });
-
-      const searchUrl = `https://www.linkedin.com/search/results/content/?${searchParams.toString()}`;
+      // Build search URL matching the exact LinkedIn structure
+      // Using contentType=posts (for text content), datePosted=past-24h, origin=FACETED_SEARCH, sortBy=relevance
+      const searchUrl = `https://www.linkedin.com/search/results/content/?contentType=%22posts%22&datePosted=%22past-24h%22&keywords=${encodeURIComponent(keyword)}&origin=FACETED_SEARCH&sortBy=%22relevance%22`;
       logger.debug({ keyword, area, url: searchUrl }, "Loading search page");
 
       await page.goto(searchUrl, {
@@ -441,11 +433,47 @@ export class LinkedInScraperImpl implements LinkedInScraper {
 
               if (!content || content.length < 50) continue; // Skip very short posts
 
-              // Extract author
-              const authorEl =
-                element.querySelector(".feed-shared-actor__name") ||
-                element.querySelector(".update-components-actor__name");
-              const author = authorEl?.textContent?.trim() || "Unknown";
+              // Extract author - try multiple selectors
+              const authorSelectors = [
+                ".feed-shared-actor__name",
+                ".update-components-actor__name",
+                ".feed-shared-actor__name-link",
+                ".update-components-actor__name-link",
+                '[data-testid="actor-name"]',
+                ".actor-name",
+                "span[dir='ltr']", // LinkedIn often uses this for names
+              ];
+
+              let author = "Unknown";
+              // @ts-expect-error - Element is available in browser context
+              let authorEl: Element | null = null;
+              for (const selector of authorSelectors) {
+                authorEl = element.querySelector(selector);
+                if (authorEl) {
+                  author = authorEl.textContent?.trim() || "Unknown";
+                  if (author !== "Unknown" && author.length > 0) {
+                    break;
+                  }
+                }
+              }
+
+              // If still unknown, try to extract from any link with /in/ pattern
+              if (author === "Unknown") {
+                const authorLink = element.querySelector(
+                  'a[href*="/in/"]'
+                  // @ts-expect-error - HTMLAnchorElement is available in browser context
+                ) as HTMLAnchorElement | null;
+                if (authorLink) {
+                  const linkText = authorLink.textContent?.trim();
+                  if (
+                    linkText &&
+                    linkText.length > 0 &&
+                    linkText.length < 100
+                  ) {
+                    author = linkText;
+                  }
+                }
+              }
 
               // Extract author URL
               const authorLink = element.querySelector(

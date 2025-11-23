@@ -27,9 +27,34 @@ export class MarkdownService {
 
     markdown += `## Reference Posts\n\n`;
     markdown += `**Relevance Score:** ${trend.relevanceScore}\n\n`;
-    for (const post of trend.referencePosts) {
-      markdown += `### ${post.author}\n\n`;
+    for (let i = 0; i < trend.referencePosts.length; i++) {
+      const post = trend.referencePosts[i];
+
+      // Generate a meaningful title - use author if available, otherwise use content preview
+      let postTitle: string;
+      if (post.author && post.author !== "Unknown") {
+        postTitle = post.author;
+      } else {
+        // Use first meaningful part of content as title
+        const contentPreview =
+          post.content
+            .trim()
+            .split(/\n|\.|!|\?/)
+            .find((line) => line.trim().length > 20) ||
+          post.content.substring(0, 60);
+        postTitle =
+          contentPreview.trim() +
+          (contentPreview.length < post.content.length ? "..." : "");
+      }
+
+      markdown += `### ${postTitle}\n\n`;
       markdown += `${post.content.substring(0, 200)}${post.content.length > 200 ? "..." : ""}\n\n`;
+
+      // Only show author if it's not "Unknown"
+      if (post.author && post.author !== "Unknown") {
+        markdown += `- **Author:** ${post.author}\n`;
+      }
+
       markdown += `- **Engagement:** ${post.engagement.likes} likes, ${post.engagement.comments} comments, ${post.engagement.shares} shares\n`;
       markdown += `- **Link:** [View Post](${post.url})\n\n`;
     }

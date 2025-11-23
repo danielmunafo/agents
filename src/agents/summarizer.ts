@@ -1,9 +1,8 @@
 import OpenAI from "openai";
-import { logger } from "../utils/logger.js";
-import type { Trend } from "../types/Trend.js";
-import type { Area } from "../types/Area.js";
-import { env } from "../config/index.js";
-import { getAreaSlug } from "../types/Area.js";
+import { logger } from "../shared/utils/logger.js";
+import type { Trend } from "../domain/entities/Trend.js";
+import { Area, getAreaSlug } from "../domain/value-objects/Area.js";
+import { env } from "../shared/config/index.js";
 
 const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
@@ -64,7 +63,7 @@ Provide a 2-3 paragraph executive summary that highlights the most important tre
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
     });
 

@@ -11,6 +11,7 @@ import { MarkdownService } from "../../domain/services/MarkdownService.js";
 import { container } from "../../infrastructure/di/container.js";
 import { logger } from "../../shared/utils/logger.js";
 import type { PRData } from "../../domain/repositories/GitHubRepository.js";
+import type { GitHubRepository } from "../../domain/repositories/GitHubRepository.js";
 
 export class DailyWorkflow {
   private readonly collectPostsUseCase: CollectPostsUseCase;
@@ -18,12 +19,13 @@ export class DailyWorkflow {
   private readonly createPRUseCase: CreatePRUseCase;
   private readonly markdownService = new MarkdownService();
   private readonly agents: Map<Area, Agent>;
+  private readonly githubRepository: GitHubRepository;
 
   constructor() {
     const linkedInScraper = container.getLinkedInScraper();
-    const githubRepository = container.getGitHubRepository();
+    this.githubRepository = container.getGitHubRepository();
 
-    // Get all Mastra agents for all areas
+    // Get all OpenAI agents for all areas
     this.agents = container.getAllAgents();
 
     // Ensure agents exist for all areas
@@ -35,7 +37,26 @@ export class DailyWorkflow {
 
     this.collectPostsUseCase = new CollectPostsUseCase(linkedInScraper);
     this.analyzeTrendsUseCase = new AnalyzeTrendsUseCase();
-    this.createPRUseCase = new CreatePRUseCase(githubRepository);
+    this.createPRUseCase = new CreatePRUseCase(this.githubRepository);
+  }
+
+  /**
+   * Merge new posts with existing posts, deduplicating by URL
+   */
+  private mergePosts(existingPosts: Post[], newPosts: Post[]): Post[] {
+    const postsMap = new Map<string, Post>();
+
+    // Add existing posts first
+    for (const post of existingPosts) {
+      postsMap.set(post.url, post);
+    }
+
+    // Add new posts (will overwrite if URL exists, keeping the newer one)
+    for (const post of newPosts) {
+      postsMap.set(post.url, post);
+    }
+
+    return Array.from(postsMap.values());
   }
 
   async executeForArea(
@@ -49,19 +70,46 @@ export class DailyWorkflow {
 
     logger.info({ area, week, year: yr }, "Starting daily workflow for area");
 
-    // Step 1: Collect posts
-    logger.debug({ area }, "Step 1: Collecting posts");
-    const postsByArea = await this.collectPostsUseCase.execute([area]);
-    const posts = postsByArea[area];
+    // Step 0: Load existing posts from PR branch (if any)
+    logger.debug({ area }, "Step 0: Loading existing posts from PR branch");
+    const existingPosts =
+      (await this.githubRepository.loadPostsFromPR(week, yr, area)) || [];
+    logger.debug(
+      { area, existingPostCount: existingPosts.length },
+      "Loaded existing posts"
+    );
 
-    if (posts.length === 0) {
-      logger.warn({ area }, "No posts collected, skipping");
+    // Step 1: Collect new posts
+    logger.debug({ area }, "Step 1: Collecting new posts");
+    const postsByArea = await this.collectPostsUseCase.execute([area]);
+    const newPosts = postsByArea[area];
+
+    if (newPosts.length === 0 && existingPosts.length === 0) {
+      logger.warn(
+        { area },
+        "No posts collected and no existing posts, skipping"
+      );
       return;
     }
 
-    // Step 2: Analyze using Mastra agent for this area
-    logger.debug({ area }, "Step 2: Analyzing trends");
-    const areaPosts = { [area]: posts } as Record<Area, Post[]>;
+    // Merge new posts with existing posts (deduplicate by URL)
+    const allPosts = this.mergePosts(existingPosts, newPosts);
+    logger.debug(
+      {
+        area,
+        existingCount: existingPosts.length,
+        newCount: newPosts.length,
+        totalCount: allPosts.length,
+      },
+      "Merged posts"
+    );
+
+    // Step 2: Analyze using OpenAI agent for this area with all accumulated posts
+    logger.debug(
+      { area, postCount: allPosts.length },
+      "Step 2: Analyzing trends with all accumulated posts"
+    );
+    const areaPosts = { [area]: allPosts } as Record<Area, Post[]>;
     const areaAgents = new Map<Area, Agent>();
     const agent = this.agents.get(area);
     if (!agent) {
@@ -79,14 +127,14 @@ export class DailyWorkflow {
     }
 
     // Check if analysis failed (fallback was used)
-    // The _isFallback flag is set by MastraAgentFactory when analysis fails
+    // The _isFallback flag is set by OpenAIAgentFactory when analysis fails
     const analysisFailed =
       (trend as { _isFallback?: boolean })._isFallback === true;
     if (analysisFailed) {
-      const errorMsg = `AI analysis failed for area "${area}". The Mastra agent could not generate a proper trend analysis. This usually means:
-1. The agent response format changed or is incompatible
-2. The OpenAI API returned an unexpected response structure
-3. Network or API errors occurred
+      const errorMsg = `AI analysis failed for area "${area}". The OpenAI agent could not generate a proper trend analysis. This usually means:
+1. The OpenAI API returned an unexpected response structure
+2. Network or API errors occurred
+3. The response could not be parsed as valid JSON
 
 Check the logs for detailed error information. The workflow will not create a PR when analysis fails.`;
       logger.error({ area, trend }, errorMsg);
@@ -175,7 +223,7 @@ Check the logs for detailed error information. The workflow will not create a PR
       trend,
       markdownContent: markdown,
       filename: `${area}.md`,
-      postsJson: JSON.stringify(posts, null, 2),
+      postsJson: JSON.stringify(allPosts, null, 2),
       trendJson: JSON.stringify(trend, null, 2),
     };
 
@@ -190,22 +238,43 @@ Check the logs for detailed error information. The workflow will not create a PR
 
     logger.info({ week, year: yr }, "Starting daily workflow for all areas");
 
-    // Step 1: Collect posts
-    logger.debug("Step 1: Collecting posts for all areas");
-    const postsByArea = await this.collectPostsUseCase.execute(AREAS);
+    // Step 1: Collect new posts
+    logger.debug("Step 1: Collecting new posts for all areas");
+    const newPostsByArea = await this.collectPostsUseCase.execute(AREAS);
 
-    // Step 2: Analyze using Mastra agents
-    logger.debug("Step 2: Analyzing trends for all areas using Mastra agents");
+    // Step 2: Load existing posts and merge with new posts
+    logger.debug("Step 2: Loading existing posts and merging");
+    const allPostsByArea: Record<Area, Post[]> = {} as Record<Area, Post[]>;
+    for (const area of AREAS) {
+      const existingPosts =
+        (await this.githubRepository.loadPostsFromPR(week, yr, area)) || [];
+      const newPosts = newPostsByArea[area] || [];
+      allPostsByArea[area] = this.mergePosts(existingPosts, newPosts);
+      logger.debug(
+        {
+          area,
+          existingCount: existingPosts.length,
+          newCount: newPosts.length,
+          totalCount: allPostsByArea[area].length,
+        },
+        "Merged posts for area"
+      );
+    }
+
+    // Step 3: Analyze using OpenAI agents with all accumulated posts
+    logger.debug(
+      "Step 3: Analyzing trends for all areas using OpenAI agents with accumulated posts"
+    );
     const trends = await this.analyzeTrendsUseCase.execute(
-      postsByArea,
+      allPostsByArea,
       this.agents
     );
 
-    // Step 3: Generate markdown and create PRs
-    logger.debug("Step 3: Generating markdown files and creating PRs");
+    // Step 4: Generate markdown and create PRs
+    logger.debug("Step 4: Generating markdown files and creating PRs");
     for (const [area, trend] of Object.entries(trends) as [Area, Trend][]) {
       const markdown = this.markdownService.trendToMarkdown(trend, week, yr);
-      const posts = postsByArea[area];
+      const allPosts = allPostsByArea[area];
 
       const prData: PRData = {
         weekNumber: week,
@@ -214,7 +283,7 @@ Check the logs for detailed error information. The workflow will not create a PR
         trend,
         markdownContent: markdown,
         filename: `${area}.md`,
-        postsJson: JSON.stringify(posts, null, 2),
+        postsJson: JSON.stringify(allPosts, null, 2),
         trendJson: JSON.stringify(trend, null, 2),
       };
 

@@ -15,7 +15,7 @@ export class WeeklyWorkflow {
   constructor() {
     const githubRepository = container.getGitHubRepository();
 
-    // Create a general-purpose Mastra agent for summaries
+    // Create a general-purpose OpenAI agent for summaries
     const summaryAgent = container.createGeneralAgent(
       "You are an expert analyst specializing in creating executive summaries of tech trends. Create comprehensive, well-structured summaries that highlight the most important trends and their implications."
     );
