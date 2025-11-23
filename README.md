@@ -91,7 +91,54 @@ export GITHUB_REPO_NAME="agents"
 # Optional: Logging configuration
 export LOG_LEVEL="debug"  # debug, info, warn, error (default: info in production, debug in development)
 export NODE_ENV="development"  # development or production
+# Optional: LinkedIn cookies path (default: linkedin-cookies.json in project root)
+export LINKEDIN_COOKIES_PATH="path/to/linkedin-cookies.json"
 ```
+
+4. **LinkedIn Authentication (Required for scraping):**
+
+   LinkedIn requires authentication to view search results. You need to export your LinkedIn cookies:
+
+   **Option 1: Using Browser Extension (Recommended)**
+
+   Install a cookie export extension (Export Cookes)[https://chromewebstore.google.com/detail/export-cookie-json-file-f/nmckokihipjgplolmcmjakknndddifde?hl=en-US&utm_source=ext_sidebar], then:
+   1. Log in to LinkedIn in your browser
+   2. Use the extension to export cookies for `linkedin.com`
+   3. Convert the exported format to JSON (see below)
+   4. Save as `linkedin-cookies.json` in the project root
+
+   **Cookie JSON Format:**
+
+   ```json
+   [
+     {
+       "name": "li_at",
+       "value": "your-session-cookie-value",
+       "domain": ".linkedin.com",
+       "path": "/",
+       "expires": 1234567890,
+       "httpOnly": true,
+       "secure": true,
+       "sameSite": "None"
+     },
+     {
+       "name": "JSESSIONID",
+       "value": "your-jsessionid-value",
+       "domain": ".linkedin.com",
+       "path": "/",
+       "expires": -1,
+       "httpOnly": true,
+       "secure": true,
+       "sameSite": "None"
+     }
+   ]
+   ```
+
+   **Important Notes:**
+   - The `li_at` cookie is the most important one (your session token)
+   - Cookies expire, so you may need to refresh them periodically
+   - Keep `linkedin-cookies.json` in `.gitignore` (it's already there) - never commit your cookies!
+   - For GitHub Actions, you'll need to store cookies as a secret and load them at runtime
 
 ### Running Locally
 

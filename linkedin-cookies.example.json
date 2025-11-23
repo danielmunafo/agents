@@ -1,0 +1,22 @@
+[
+  {
+    "name": "li_at",
+    "value": "YOUR_SESSION_COOKIE_VALUE_HERE",
+    "domain": ".linkedin.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  },
+  {
+    "name": "JSESSIONID",
+    "value": "YOUR_JSESSIONID_VALUE_HERE",
+    "domain": ".linkedin.com",
+    "path": "/",
+    "expires": -1,
+    "httpOnly": true,
+    "secure": true,
+    "sameSite": "None"
+  }
+]

@@ -122,5 +122,9 @@ export const SCRAPER_CONFIG = {
   maxPostsPerArea: 20,
   delayBetweenRequests: 2000, // 2 seconds
   timeout: 30000, // 30 seconds
-  headless: true,
+  headless: process.env.PUPPETEER_HEADLESS !== "false", // Set PUPPETEER_HEADLESS=false to see browser
+  slowMo: process.env.PUPPETEER_SLOW_MO
+    ? parseInt(process.env.PUPPETEER_SLOW_MO, 10)
+    : 0, // Slow down operations (ms)
+  devtools: process.env.PUPPETEER_DEVTOOLS === "true", // Open DevTools
 } as const;

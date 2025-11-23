@@ -74,9 +74,97 @@ export class DailyWorkflow {
     );
     const trend = trends[area];
 
+    if (!trend) {
+      throw new Error(`No trend found for area: ${area}`);
+    }
+
+    // Check if analysis failed (fallback was used)
+    // The _isFallback flag is set by MastraAgentFactory when analysis fails
+    const analysisFailed =
+      (trend as { _isFallback?: boolean })._isFallback === true;
+    if (analysisFailed) {
+      const errorMsg = `AI analysis failed for area "${area}". The Mastra agent could not generate a proper trend analysis. This usually means:
+1. The agent response format changed or is incompatible
+2. The OpenAI API returned an unexpected response structure
+3. Network or API errors occurred
+
+Check the logs for detailed error information. The workflow will not create a PR when analysis fails.`;
+      logger.error({ area, trend }, errorMsg);
+      throw new Error(errorMsg);
+    }
+
+    // Validate trend structure
+    if (!trend.mainAspects || !Array.isArray(trend.mainAspects)) {
+      logger.error({ area, trend }, "Trend missing mainAspects array");
+      throw new Error(
+        `Invalid trend structure: missing mainAspects for area ${area}`
+      );
+    }
+    if (!trend.whyImportant) {
+      logger.error({ area, trend }, "Trend missing whyImportant");
+      throw new Error(
+        `Invalid trend structure: missing whyImportant for area ${area}`
+      );
+    }
+    if (!trend.toolsFrameworks || !Array.isArray(trend.toolsFrameworks)) {
+      logger.warn({ area }, "Trend missing toolsFrameworks, using empty array");
+      trend.toolsFrameworks = [];
+    }
+    if (!trend.suggestedActions || !Array.isArray(trend.suggestedActions)) {
+      logger.warn(
+        { area },
+        "Trend missing suggestedActions, using empty array"
+      );
+      trend.suggestedActions = [];
+    }
+    if (!trend.referencePosts || !Array.isArray(trend.referencePosts)) {
+      logger.warn({ area }, "Trend missing referencePosts, using empty array");
+      trend.referencePosts = [];
+    }
+    if (typeof trend.relevanceScore !== "number") {
+      logger.warn({ area }, "Trend missing relevanceScore, using 0");
+      trend.relevanceScore = 0;
+    }
+
+    logger.debug(
+      {
+        area,
+        trend: {
+          mainAspects: trend.mainAspects?.length,
+          toolsFrameworks: trend.toolsFrameworks?.length,
+          suggestedActions: trend.suggestedActions?.length,
+          referencePosts: trend.referencePosts?.length,
+        },
+      },
+      "Trend validated"
+    );
+
     // Step 3: Generate markdown
     logger.debug({ area }, "Step 3: Generating markdown");
-    const markdown = this.markdownService.trendToMarkdown(trend, week, yr);
+    let markdown: string;
+    try {
+      markdown = this.markdownService.trendToMarkdown(trend, week, yr);
+      logger.debug(
+        { area, markdownLength: markdown.length },
+        "Markdown generated successfully"
+      );
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      logger.error(
+        {
+          area,
+          error: errorMessage,
+          stack: errorStack,
+          trend: JSON.stringify(trend, null, 2),
+          week,
+          year: yr,
+        },
+        "Failed to generate markdown"
+      );
+      throw error;
+    }
 
     // Step 4: Create PR
     logger.debug({ area }, "Step 4: Creating/updating PR");

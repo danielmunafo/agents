@@ -16,4 +16,5 @@ export interface TrendAnalysis {
   whyImportant: string;
   toolsFrameworks: string[];
   suggestedActions: string[];
+  _isFallback?: boolean; // Internal flag to indicate if this is a fallback response
 }
