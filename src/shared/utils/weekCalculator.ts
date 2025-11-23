@@ -1,4 +1,4 @@
-import { getWeek, getYear, startOfWeek, endOfWeek } from "date-fns";
+import { getWeek, getYear, startOfWeek, endOfWeek, subWeeks } from "date-fns";
 import type { WeekInfo } from "../../domain/value-objects/WeekInfo.js";
 
 /**
@@ -7,6 +7,15 @@ import type { WeekInfo } from "../../domain/value-objects/WeekInfo.js";
 export function getCurrentWeek(): WeekInfo {
   const now = new Date();
   return getWeekInfo(now);
+}
+
+/**
+ * Calculate the previous week (for summarizing completed weeks)
+ */
+export function getPreviousWeek(): WeekInfo {
+  const now = new Date();
+  const previousWeekDate = subWeeks(now, 1);
+  return getWeekInfo(previousWeekDate);
 }
 
 export function getWeekInfo(date: Date): WeekInfo {

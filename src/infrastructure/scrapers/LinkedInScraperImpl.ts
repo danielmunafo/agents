@@ -91,6 +91,7 @@ export class LinkedInScraperImpl implements LinkedInScraper {
           '[data-testid="search-result"]'
         );
         const results: ScrapedPost[] = [];
+        const parseErrors: string[] = [];
 
         for (const element of Array.from(postElements).slice(
           0,
@@ -167,18 +168,27 @@ export class LinkedInScraperImpl implements LinkedInScraper {
               },
               url: url || `https://www.linkedin.com/feed/update/${Date.now()}`,
             });
-          } catch {
+          } catch (err) {
             // Skip posts that fail to parse
-            // Note: logger is not available in browser context (page.evaluate)
-            // Errors are silently skipped to continue processing other posts
+            // Track errors to log them after evaluate returns (logger not available in browser context)
+            const errorMsg = err instanceof Error ? err.message : String(err);
+            parseErrors.push(errorMsg);
           }
         }
 
-        return results;
+        return { results, parseErrors };
       }, maxPosts);
 
+      // Log parse errors if any occurred
+      if (posts.parseErrors && posts.parseErrors.length > 0) {
+        logger.debug(
+          { keyword, area, errorCount: posts.parseErrors.length },
+          "Some posts failed to parse during scraping"
+        );
+      }
+
       // Convert to Post format
-      return posts.map((post, index) => ({
+      return posts.results.map((post, index) => ({
         id: `${keyword}-${Date.now()}-${index}`,
         content: post.content,
         author: post.author,

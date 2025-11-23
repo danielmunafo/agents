@@ -1,5 +1,5 @@
 import { AREAS } from "../../domain/value-objects/Area.js";
-import { getCurrentWeek } from "../../shared/utils/weekCalculator.js";
+import { getPreviousWeek } from "../../shared/utils/weekCalculator.js";
 import { LoadTrendsFromPRUseCase } from "../../application/use-cases/LoadTrendsFromPRUseCase.js";
 import { CreateSummaryUseCase } from "../../application/use-cases/CreateSummaryUseCase.js";
 import { CreatePRUseCase } from "../../application/use-cases/CreatePRUseCase.js";
@@ -26,8 +26,10 @@ export class WeeklyWorkflow {
   }
 
   async execute(weekNumber?: number, year?: number): Promise<void> {
+    // If weekNumber and year are provided, use them
+    // Otherwise, use previous week (for scheduled runs on Sunday, we summarize the completed week)
     const weekInfo =
-      weekNumber && year ? { weekNumber, year } : getCurrentWeek();
+      weekNumber && year ? { weekNumber, year } : getPreviousWeek();
     const { weekNumber: week, year: yr } = weekInfo;
 
     logger.info({ week, year: yr }, "Starting weekly workflow");

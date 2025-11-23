@@ -29,8 +29,21 @@ export class MonthlyWorkflow {
 
   async execute(year?: number, month?: number): Promise<void> {
     const now = new Date();
-    const yr = year || now.getFullYear();
-    const mth = month || now.getMonth() + 1;
+    // If year and month are provided, use them
+    // Otherwise, use previous month (for scheduled runs on 1st, we summarize the completed month)
+    let yr: number;
+    let mth: number;
+
+    if (year && month) {
+      // Use provided values
+      yr = year;
+      mth = month;
+    } else {
+      // Calculate previous month
+      const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      yr = year || prevMonthDate.getFullYear();
+      mth = month || prevMonthDate.getMonth() + 1;
+    }
 
     logger.info({ month: mth, year: yr }, "Starting monthly workflow");
     logger.debug("Reading weekly summaries from weekly PR branches");

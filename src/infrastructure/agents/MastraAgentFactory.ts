@@ -61,9 +61,9 @@ Provide a JSON response with:
       const content =
         typeof response === "string"
           ? response
-          : response?.text ||
-            response?.content ||
-            response?.output ||
+          : (response as { text?: string })?.text ||
+            (response as { content?: string })?.content ||
+            (response as { output?: string })?.output ||
             JSON.stringify(response);
 
       // Try to parse as JSON, fallback to text extraction
@@ -100,15 +100,56 @@ Provide a JSON response with:
 
   async generateText(prompt: string): Promise<string> {
     try {
-      const response =
-        (await this.agent.generate?.(prompt)) ||
-        (await this.agent.run?.(prompt)) ||
-        (await this.agent.execute?.(prompt));
+      // Try multiple Mastra API methods with proper error handling
+      let response: unknown;
+      let lastError: Error | undefined;
+
+      if (this.agent.generate) {
+        try {
+          response = await this.agent.generate(prompt);
+        } catch (error) {
+          lastError = error instanceof Error ? error : new Error(String(error));
+          logger.debug(
+            { area: this.area, method: "generate", error: lastError },
+            "Mastra generate method failed, trying fallback"
+          );
+        }
+      }
+
+      if (!response && this.agent.run) {
+        try {
+          response = await this.agent.run(prompt);
+        } catch (error) {
+          lastError = error instanceof Error ? error : new Error(String(error));
+          logger.debug(
+            { area: this.area, method: "run", error: lastError },
+            "Mastra run method failed, trying fallback"
+          );
+        }
+      }
+
+      if (!response && this.agent.execute) {
+        try {
+          response = await this.agent.execute(prompt);
+        } catch (error) {
+          lastError = error instanceof Error ? error : new Error(String(error));
+          logger.debug(
+            { area: this.area, method: "execute", error: lastError },
+            "Mastra execute method failed"
+          );
+        }
+      }
+
+      if (!response) {
+        throw new Error(
+          `No Mastra agent method succeeded. Last error: ${lastError?.message || "unknown"}`
+        );
+      }
       return typeof response === "string"
         ? response
-        : response?.text ||
-            response?.content ||
-            response?.output ||
+        : (response as { text?: string })?.text ||
+            (response as { content?: string })?.content ||
+            (response as { output?: string })?.output ||
             JSON.stringify(response);
     } catch (error) {
       logger.error(

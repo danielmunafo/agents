@@ -78,12 +78,12 @@ export class GitHubRepositoryImpl implements GitHubRepository {
       const prBody = this.getPRBody(type, data);
 
       // Check for existing PR from this branch
-      // For same-repo PRs, head is just the branch name
+      // Use owner:branchName format for same-repo PRs to ensure correct matching
       const { data: existingPRs } = await this.octokit.pulls.list({
         owner,
         repo,
         state: "open",
-        head: branchName,
+        head: `${owner}:${branchName}`,
       });
 
       let pr;
