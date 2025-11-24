@@ -1,0 +1,93 @@
+{
+  "area": "Architecture, governance and design",
+  "mainAspects": [
+    "Integration of agility in architecture",
+    "Importance of understanding complex systems and patterns",
+    "Need for clear communication in enterprise architecture"
+  ],
+  "whyImportant": "These trends have emerged due to the increasing complexity of technology landscapes and the need for adaptability in software development. As organizations face rapid changes and a plethora of technologies, effective architectural practices that integrate agility and foster understanding among stakeholders have become essential for success.",
+  "toolsFrameworks": [
+    "Head First Software Architecture",
+    "Fundamentals of Software Architecture",
+    "Software Architecture: The Hard Parts",
+    "Designing Data Intensive Applications"
+  ],
+  "suggestedActions": [
+    "Engage with literature that simplifies architectural concepts and enhances both technical and soft skills.",
+    "Foster clear communication and visualization techniques to ensure architecture is accessible to all stakeholders.",
+    "Embrace agile methodologies in architectural practices to enhance flexibility and responsiveness to change."
+  ],
+  "referencePosts": [
+    {
+      "id": "software architecture-1763942704589-5",
+      "content": "\"Architecture is the implementation of agility.\"Eberhard Wolff's provocative thesis:Architecture & agility aren't opposites—they share core principles: → Both embrace change → Both revolve around people & trust → Both navigate uncertainty → Both work in iterationsNot separate domains. Complementary practices.Read the essay and discuss with Eberhard in person at Agile meets Architecture 2026",
+      "author": "Agile meets ArchitectureAgile meets Architecture",
+      "authorUrl": "https://www.linkedin.com/in/eberhardwolff/",
+      "date": "2025-11-24T00:05:04.589Z",
+      "engagement": {
+        "likes": 0,
+        "comments": 0,
+        "shares": 4
+      },
+      "url": "https://www.linkedin.com/feed/update/1763942704588",
+      "area": "Architecture, governance and design"
+    },
+    {
+      "id": "software architecture-1763942704589-6",
+      "content": "Hey Muleys & Trailblazers! 🤠 I often get asked for book recommendations, and this combo is the ultimate architect's toolkit! \"Head First Software Architecture\" makes the concepts easy to digest with its engaging, story-based approach. \"Fundamentals of Software Architecture\" helps you deepen both your technical patterns and essential soft skills. Finally, \"Software Architecture: The Hard Parts\" is a total gem for bridging modern integration challenges and solving complex distributed system trade-offs.It’s the perfect way to keep your skills sharp in our fast-evolving ecosystem.Have you read any of these yet, or do you have another favorite to add? 🤓hashtag#AmbassadorPatryk hashtag#MuleSoft hashtag#Salesforce hashtag#ArchitectMindset hashtag#ContinuousLearning MuleSoft Community",
+      "author": "Patryk BandurskiPatryk Bandurski",
+      "authorUrl": "https://www.linkedin.com/in/prof-it-patryk-bandurski?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAAAv3SjABEJqk1b82MiQPQKUA-xXvT_h0YNs",
+      "date": "2025-11-24T00:05:04.589Z",
+      "engagement": {
+        "likes": 0,
+        "comments": 2,
+        "shares": 0
+      },
+      "url": "https://www.linkedin.com/feed/update/1763942704589",
+      "area": "Architecture, governance and design"
+    },
+    {
+      "id": "system design-1763942728553-5",
+      "content": "I finally started reading this great System Design book - \"Designing Data Intensive Applications\" and wow, what a game changer. ✨If you are someone who wants to understand how real systems work behind the scenes, understanding databases, scaling, consistency, distributed systems, performance, this book explains everything in a way that actually sticks.What I love the most is how it breaks down complex topics into simple ideas, with examples that make you go, \"Ohhh, now I get it!\" 😄Whether you are preparing for system design interviews or simply want to become a better engineer, this book is honestly one of the best resources out there.Super happy that I started reading it, already learning so much and connecting the dots I didn’t even know I was missing. If you have been thinking about growing in backend/system design, this is definitely a must read.Book link in the comments!!hashtag#SystemDesign hashtag#TechLearning hashtag#SoftwareEngineering hashtag#CareerGrowth hashtag#DesigningDataIntensiveApplications",
+      "author": "Navyaa SharmaNavyaa Sharma",
+      "authorUrl": "https://www.linkedin.com/in/navyaa-sharma-here?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAACxtZHYBD71LC0s9dKmQas4RxuBzYJtbOEg",
+      "date": "2025-11-24T00:05:28.553Z",
+      "engagement": {
+        "likes": 0,
+        "comments": 18,
+        "shares": 0
+      },
+      "url": "https://www.linkedin.com/feed/update/1763942728552",
+      "area": "Architecture, governance and design"
+    },
+    {
+      "id": "enterprise architecture-1763942751308-2",
+      "content": "From Swamp to Blizzard: Why Enterprise Architecture Matters More Than EverIT’s biggest problem today isn’t choosing technology — it’s drowning in the sheer volume of it.Since the 1960s, each tech epoch has expanded the landscape:Mainframes → Client–Server → Web → SaaS → Cloud → AI More vendors. More products. More models. More everything.What started as a technology swamp has become a technology blizzard — low visibility, high speed, infinite choice.And this is why Enterprise Architecture (EA) matters more than ever.Modern EA isn’t control. It’s orchestration.EA aligns teams around capabilities, not productsEA prevents innovation from turning into chaosEA keeps legacy, cloud, and AI ecosystems coherentThe swamp created complexity The blizzard creates fragmentation EA is how we navigate both",
+      "author": "Brendan FoxBrendan Fox",
+      "authorUrl": "https://www.linkedin.com/in/brendan-fox-4a0b6b6?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAAAE9VvgBWuWjIHfhBNCnVlNA1b5B44giTpA",
+      "date": "2025-11-24T00:05:51.308Z",
+      "engagement": {
+        "likes": 0,
+        "comments": 0,
+        "shares": 0
+      },
+      "url": "https://www.linkedin.com/feed/update/1763942751307",
+      "area": "Architecture, governance and design"
+    },
+    {
+      "id": "enterprise architecture-1763942751308-6",
+      "content": "Architecture must be human-consumable - never human-frightening.With five decades of unmatched experience developing, implementing, and managing successful Enterprise and Business Architectures worldwide, one common mistake persists: professionals deliver complex maps, flows, and diagrams that business decision-makers simply overlook.No matter how powerful the tool or software, if stakeholders cannot easily understand and engage with the architecture, it ultimately fails.Through proven methodologies and tools from the Enterprise Architecture Center Of Excellence (EACOE) and Business Architecture Center Of Excellence (BACOE), architecture is crafted for people first.We empower architecture professionals to create clear, stakeholder-focused, human-consumable representations that drive understanding, actionable results, and measurable success.Elevate your architecture skills, boost your professional recognition, and transform your outcomes with training and certification from www.eacoe.org and www.bacoe.org.hashtag#Business Architecture hashtag#EnterpriseArchitecture",
+      "author": "Samuel HolcmanSamuel Holcman",
+      "authorUrl": "https://www.linkedin.com/in/samuel-holcman?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAAATRXIYB6Zq8Ti0v5AEue69I6UK8xGzMQYE",
+      "date": "2025-11-24T00:05:51.308Z",
+      "engagement": {
+        "likes": 0,
+        "comments": 1,
+        "shares": 0
+      },
+      "url": "https://www.linkedin.com/feed/update/1763942751308",
+      "area": "Architecture, governance and design"
+    }
+  ],
+  "relevanceScore": 10.8
+}
