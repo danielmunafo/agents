@@ -1,0 +1,46 @@
+{
+  "area": "DevOps and infrastructure",
+  "mainAspects": [
+    "Importance of understanding outages and their impact on services",
+    "Centralization of DevOps tools and platforms",
+    "Integration of CI/CD processes with various tools"
+  ],
+  "whyImportant": "Understanding the causes and impacts of outages is crucial for improving system resilience and developing better architectural practices. Additionally, as organizations adopt CI/CD and DevOps practices, the centralization and optimization of tools become essential for maintaining efficiency and performance in software delivery.",
+  "toolsFrameworks": ["GitLab", "Jira", "Kubernetes", "Docker", "Cloudflare"],
+  "suggestedActions": [
+    "Stay informed about recent outages and analyze their causes to improve your own systems.",
+    "Focus on optimizing and centralizing your DevOps tools to enhance collaboration and efficiency.",
+    "Integrate CI/CD pipelines with other essential tools to streamline development processes and ensure robust security practices."
+  ],
+  "referencePosts": [
+    {
+      "id": "DevOps-1763942623915-5",
+      "content": "Just published a new issue of Architect’s Compass, breaking down the recent Cloudflare outage in simple, architectural terms — ✔ What caused it ✔ How it impacted global services ✔ Why even the most resilient platforms fail ✔ Lessons for Cloud, DevOps & Platform teamshashtag#Cloud hashtag#AI hashtag#Security hashtag#DevSecOps hashtag#Newsletter hashtag#CloudArchitecture hashtag#ArchitectsCompass hashtag#Architecture hashtag#CloudComputing hashtag#DevOps hashtag#SRE hashtag#TechLeadership hashtag#LinkedInNewsletter hashtag#EngineeringExcellence hashtag#TechInsights hashtag#CloudStrategy hashtag#GCP hashtag#AWS hashtag#Azure",
+      "author": "Bhushan AltiBhushan Alti",
+      "authorUrl": "https://www.linkedin.com/in/bhushanalti?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAAAIMpVkBHBaZESy60nhAnYn_TFn9zyL6hzo",
+      "date": "2025-11-24T00:03:43.915Z",
+      "engagement": {
+        "likes": 0,
+        "comments": 0,
+        "shares": 0
+      },
+      "url": "https://www.linkedin.com/feed/update/1763942623915",
+      "area": "DevOps and infrastructure"
+    },
+    {
+      "id": "CI/CD-1763942646577-6",
+      "content": "We are hiring a GitLab Administrator for a 12-month project with our client in Saudi Arabia. The ideal candidate will manage, configure, and optimize GitLab as the central DevOps platform. This includes maintaining users, projects, permissions, CI/CD pipelines, security, integrations with tools like Jira, Kubernetes, and Docker, as well as supporting developers and ensuring system performance, backups, and disaster recovery.",
+      "author": "Yasmin MohamedYasmin Mohamed",
+      "authorUrl": "https://www.linkedin.com/in/yasmin-mohamed-a65b8710a?miniProfileUrn=urn%3Ali%3Afsd_profile%3AACoAABuVIS0BucUVljo0w-GR2gNzrGcrADTeH_g",
+      "date": "2025-11-24T00:04:06.577Z",
+      "engagement": {
+        "likes": 0,
+        "comments": 1,
+        "shares": 0
+      },
+      "url": "https://www.linkedin.com/feed/update/1763942646576",
+      "area": "DevOps and infrastructure"
+    }
+  ],
+  "relevanceScore": 1
+}
