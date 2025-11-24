@@ -279,3 +279,87 @@ npm run format
 
 - **PRs**: Created automatically with proper branch names and file structure
 - Each area PR contains both the markdown summary and the raw JSON data files for reference
+
+## Known Limitations
+
+This project has several limitations that users should be aware of:
+
+### Agent Capabilities
+
+- **No Tool Usage**: The AI agents are not using external tools or function calling. They operate as simple LLM-based analyzers that process text input (LinkedIn posts) and generate structured JSON responses. Agents cannot browse the web, access databases, or perform any actions beyond text analysis.
+
+- **Limited to Prompt-Based Analysis**: All analysis is performed through prompt engineering. Agents rely solely on the content provided in LinkedIn posts and cannot fetch additional context or verify information from external sources.
+
+### LinkedIn Data Limitations
+
+- **Search Result Dependency**: Agent outputs are entirely limited by what LinkedIn's search returns. The quality and relevance of trend analysis depends directly on:
+  - The posts LinkedIn's search algorithm surfaces
+  - LinkedIn's search ranking and filtering mechanisms
+  - The keywords used for each area (limited to first 3 keywords per area)
+  - LinkedIn's content moderation and visibility rules
+
+- **Time Window Restriction**: The scraper only retrieves posts from the **past 24 hours**. This means:
+  - Trends are based on very recent activity only
+  - Longer-term patterns may be missed
+  - Daily runs accumulate data throughout the week, but each day only sees 24-hour windows
+
+- **Public Posts Only**: The system can only access public LinkedIn posts. Private posts, restricted content, or posts requiring special permissions are not included in the analysis.
+
+- **Limited Post Volume**: By default, the system collects a maximum of **20 posts per area** per day. This limitation helps manage API costs and processing time but may miss important trends if they're not in the top results.
+
+- **LinkedIn UI Fragility**: The scraper relies on specific CSS selectors and page structure. If LinkedIn changes their UI, the scraper may break and require updates to selectors and extraction logic.
+
+### Authentication & Access
+
+- **Cookie Expiration**: LinkedIn cookies expire periodically (typically every few weeks to months). When cookies expire, the workflow will fail until new cookies are exported and updated in the GitHub secret.
+
+- **Rate Limiting**: LinkedIn may rate-limit or block requests if:
+  - Too many requests are made in a short time
+  - Unusual activity patterns are detected
+  - The account appears to be automated
+
+### AI Analysis Limitations
+
+- **Model Dependency**: Analysis quality depends on the OpenAI model used (default: `gpt-4o-mini`). While cost-effective, this model may have limitations in:
+  - Understanding complex technical concepts
+  - Identifying nuanced trends
+  - Distinguishing between genuine trends and marketing content
+
+- **Fallback Content**: When AI analysis fails (API errors, parsing issues, etc.), the system generates fallback content that requires manual review. These fallback trends are marked with `_isFallback: true` in the data.
+
+- **No Fact-Checking**: Agents analyze and summarize content but do not verify the accuracy of claims made in LinkedIn posts. Users should validate important information independently.
+
+### Cost & Performance
+
+- **OpenAI API Costs**: Each analysis requires API calls to OpenAI. Costs scale with:
+  - Number of areas analyzed (8 areas × daily runs)
+  - Number of posts analyzed
+  - Model used (gpt-4o-mini is cheaper but less capable than gpt-4o)
+
+- **OpenAI Rate Limits**: The system is subject to OpenAI's rate limits:
+  - Token limits per minute/day
+  - Request limits per minute/day
+  - Critical errors (quota exceeded, authentication failed) will stop the workflow
+
+### Data Quality
+
+- **LinkedIn Post Quality**: The quality of trend analysis is directly tied to the quality of posts on LinkedIn. Issues include:
+  - Marketing/sponsored content may dominate results
+  - Low-quality or spam posts may be included
+  - Biased or opinionated content may skew trends
+  - Limited technical depth in many posts
+
+- **Keyword Limitations**: Each area uses only the first 3 keywords from a predefined list. This may miss relevant posts that use different terminology or phrasing.
+
+### Operational Limitations
+
+- **No Real-Time Updates**: Workflows run on fixed schedules (daily at 02:00 UTC, weekly on Sundays, monthly on the 1st). There's no real-time monitoring or immediate trend detection.
+
+- **Manual Intervention Required**: Some scenarios require manual intervention:
+  - Updating expired LinkedIn cookies
+  - Fixing broken scrapers after LinkedIn UI changes
+  - Reviewing and correcting fallback content
+  - Handling API quota issues
+
+- **GitHub Actions Dependency**: The system relies on GitHub Actions for automation. Any GitHub Actions outages or issues will prevent workflows from running.
+
