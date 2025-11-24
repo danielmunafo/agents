@@ -1,9 +1,10 @@
 name: Weekly Trends
 
 on:
-  schedule:
-    # Run every Sunday at 00:00 UTC
-    - cron: "0 0 * * 0"
+  # schedule:
+  #   # Run every Sunday at 00:00 UTC
+  #   # CRON DISABLED - Uncomment to re-enable scheduled runs
+  #   - cron: "0 0 * * 0"
   workflow_dispatch: # Allow manual trigger
 
 jobs:

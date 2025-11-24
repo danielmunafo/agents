@@ -1,9 +1,10 @@
 name: Daily Trends
 
 on:
-  schedule:
-    # Run every day at 02:00 UTC (to avoid peak hours)
-    - cron: "0 2 * * *"
+  # schedule:
+  #   # Run every day at 02:00 UTC (to avoid peak hours)
+  #   # CRON DISABLED - Uncomment to re-enable scheduled runs
+  #   - cron: "0 2 * * *"
   workflow_dispatch: # Allow manual trigger
     inputs:
       area:

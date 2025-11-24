@@ -1,9 +1,10 @@
 name: Monthly Recommendations
 
 on:
-  schedule:
-    # Run on the 1st of every month at 00:00 UTC
-    - cron: "0 0 1 * *"
+  # schedule:
+  #   # Run on the 1st of every month at 00:00 UTC
+  #   # CRON DISABLED - Uncomment to re-enable scheduled runs
+  #   - cron: "0 0 1 * *"
   workflow_dispatch: # Allow manual trigger
 
 jobs:
